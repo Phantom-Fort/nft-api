@@ -11,7 +11,15 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  await Moralis.start({ apiKey });
+  try {
+    await Moralis.start({ apiKey });
+  } catch (error) {
+    if (req.method === 'GET') {
+      return res.status(200).json({ result: { isValid: false }, error: 'Failed to initialize Moralis SDK' });
+    } else {
+      return res.status(500).json({ error: 'Failed to initialize Moralis SDK' });
+    }
+  }
 
   let walletAddress;
   if (req.method === 'GET') {
