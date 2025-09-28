@@ -11,14 +11,8 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  try {
+  if (!Moralis.Core.isStarted) {
     await Moralis.start({ apiKey });
-  } catch (error) {
-    if (req.method === 'GET') {
-      return res.status(200).json({ result: { isValid: false }, error: 'Failed to initialize Moralis SDK' });
-    } else {
-      return res.status(500).json({ error: 'Failed to initialize Moralis SDK' });
-    }
   }
 
   let walletAddress;
@@ -67,9 +61,9 @@ module.exports = async function handler(req, res) {
       }
     } catch (error) {
       if (req.method === 'GET') {
-        return res.status(200).json({ result: { isValid: false }, error: 'Moralis API error' });
+        return res.status(200).json({ result: { isValid: false }, error: 'Moralis API error: ' + error.message });
       } else {
-        return res.status(500).json({ error: 'Moralis API error' });
+        return res.status(500).json({ error: 'Moralis API error: ' + error.message });
       }
     }
   }
